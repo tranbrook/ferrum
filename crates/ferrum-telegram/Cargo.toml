@@ -1,0 +1,16 @@
+[package]
+name = "ferrum-telegram"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ferrum-core = { workspace = true }
+ferrum-agent = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+teloxide = { workspace = true }
+chrono = { workspace = true }

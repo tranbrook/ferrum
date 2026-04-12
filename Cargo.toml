@@ -1,0 +1,86 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ferrum-core",
+    "crates/ferrum-exchange",
+    "crates/ferrum-executors",
+    "crates/ferrum-positions",
+    "crates/ferrum-risk",
+    "crates/ferrum-llm",
+    "crates/ferrum-agent",
+    "crates/ferrum-routines",
+    "crates/ferrum-api",
+    "crates/ferrum-mcp",
+    "crates/ferrum-telegram",
+    "crates/ferrum-cli",
+]
+
+[workspace.dependencies]
+# Async
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+
+# Web
+axum = { version = "0.7", features = ["ws", "macros"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+tokio-tungstenite = { version = "0.21", features = ["rustls-tls-webpki-roots"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+toml = "0.8"
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# Error handling
+thiserror = "1"
+anyhow = "1"
+
+# Logging / Observability
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+metrics = "0.22"
+metrics-exporter-prometheus = "0.14"
+opentelemetry = "0.22"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Telegram
+teloxide = { version = "0.13", features = ["macros"] }
+
+# Auth
+jsonwebtoken = "9"
+
+# Crypto
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Concurrency
+parking_lot = "0.12"
+crossbeam = "0.8"
+
+# Internal crates
+ferrum-core = { path = "crates/ferrum-core" }
+ferrum-exchange = { path = "crates/ferrum-exchange" }
+ferrum-executors = { path = "crates/ferrum-executors" }
+ferrum-positions = { path = "crates/ferrum-positions" }
+ferrum-risk = { path = "crates/ferrum-risk" }
+ferrum-llm = { path = "crates/ferrum-llm" }
+ferrum-agent = { path = "crates/ferrum-agent" }
+ferrum-routines = { path = "crates/ferrum-routines" }
+ferrum-api = { path = "crates/ferrum-api" }
+ferrum-mcp = { path = "crates/ferrum-mcp" }
+ferrum-telegram = { path = "crates/ferrum-telegram" }

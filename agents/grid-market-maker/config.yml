@@ -1,0 +1,6 @@
+# Grid Market Maker Configuration
+
+tick_interval_secs: 30
+spread_percentage: 0.5
+grid_levels: 5
+leverage: 1

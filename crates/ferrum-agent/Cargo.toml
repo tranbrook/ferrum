@@ -1,0 +1,24 @@
+[package]
+name = "ferrum-agent"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ferrum-core = { workspace = true }
+ferrum-risk = { workspace = true }
+ferrum-llm = { workspace = true }
+ferrum-exchange = { workspace = true }
+ferrum-executors = { workspace = true }
+ferrum-positions = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+rusqlite = { workspace = true }
+parking_lot = { workspace = true }
+uuid = { workspace = true }
