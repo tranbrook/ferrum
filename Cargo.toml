@@ -13,6 +13,13 @@ members = [
     "crates/ferrum-mcp",
     "crates/ferrum-telegram",
     "crates/ferrum-cli",
+    "crates/ferrum-streaming",
+    "crates/ferrum-backtest",
+    "crates/ferrum-orchestrator",
+    "crates/ferrum-paper",
+    "crates/ferrum-rag",
+    "crates/ferrum-local-llm",
+    "crates/ferrum-dashboard",
 ]
 
 [workspace.dependencies]
@@ -84,3 +91,10 @@ ferrum-routines = { path = "crates/ferrum-routines" }
 ferrum-api = { path = "crates/ferrum-api" }
 ferrum-mcp = { path = "crates/ferrum-mcp" }
 ferrum-telegram = { path = "crates/ferrum-telegram" }
+ferrum-streaming = { path = "crates/ferrum-streaming" }
+ferrum-backtest = { path = "crates/ferrum-backtest" }
+ferrum-orchestrator = { path = "crates/ferrum-orchestrator" }
+ferrum-paper = { path = "crates/ferrum-paper" }
+ferrum-rag = { path = "crates/ferrum-rag" }
+ferrum-local-llm = { path = "crates/ferrum-local-llm" }
+ferrum-dashboard = { path = "crates/ferrum-dashboard" }

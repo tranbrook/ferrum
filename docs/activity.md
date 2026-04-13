@@ -1,69 +1,81 @@
-# Activity Log - Ferrum Trading Agent Harness
+# Ferrum Bugfix Sprint - Activity Log
 
-## 2024-12-XX - Full SDD Implementation Complete
+## 2026-04-13 - Bugfix Sprint
 
-### Research Phase
-- Conducted deep research on Hummingbot V2 + Condor architecture
-- Analyzed Trading Agents Standard (positions, executors, bots, routines, risk engine)
-- Analyzed OODA loop implementation pattern
-- Researched LLM-first trading system architecture in Rust
+### P0 Critical Fixes
+- **#2 Fixed double fee deduction in paper trading** (`ferrum-paper/src/engine.rs`)
+  - BUY: Fee deducted from total cost (fill_price * amount + fee)
+  - SELL: Fee deducted from proceeds (fill_price * amount - fee)
+  - Fee only tracked in position for accounting, not double-deducted
+  - Added round-trip PnL test verifying 489.5 USDT profit
 
-### Design Phase (SDD)
-- Constitution: Rust-first, tokio async, SQLite persistence, trait-based abstractions
-- Spec: 10 user stories covering agent definition, OODA loop, risk guardrails, 6 executor types
-- Clarifications: Binance first, OpenAI primary LLM, SQLite embedded, tokio channels
-- Plan: 12 crate workspace architecture
-- Tasks: 6 phases defined
+- **#3 Fixed short selling in backtest** (`ferrum-backtest/src/engine.rs`)
+  - Short now properly locks margin (balance → 0)
+  - Close returns margin + PnL (margin + (entry - exit) * amount - fees)
+  - Extracted `close_trade()` helper for consistent long/short PnL calculation
+  - Added unit tests for long profit (489.5) and short profit (490.5)
 
-### Implementation Phase
-- **Phase 1**: Created ferrum-core (types, traits, events, config, errors)
-  - Domain types: Price, Quantity, TradingPair, Side, OrderType, etc.
-  - Core traits: ExchangeAdapter, Executor, Controller, TradingAgent, LlmClient, RiskEngine
-  - Event types: 15+ events covering market data, executor lifecycle, orders, risk
-  
-- **Phase 2**: Created ferrum-exchange (Binance REST adapter)
-  - HMAC-SHA256 request signing
-  - Order book, candles, order placement, balance queries
-  - Exchange registry with trait-based pluggable architecture
-  
-- **Phase 3**: Created ferrum-executors (3 executor types)
-  - PositionExecutor with Triple Barrier (TP/SL/TimeLimit/TrailingStop)
-  - OrderExecutor for limit/market orders
-  - GridExecutor for range-bound strategies
-  - ExecutorFactory for action-to-executor conversion
+- **#4 Fixed PnL accumulation in position tracker** (`ferrum-paper/src/tracker.rs`)
+  - Fee deducted once at position level, not re-deducted at account level
+  - Fixed partial close logic (use min(amount, pos.amount))
+  - Added reversal handling (over-close opens opposite position)
+  - Added tests for: partial close, add-to-position, average entry price
 
-- **Phase 4**: Created ferrum-positions (SQLite persistence)
-  - PositionTracker with in-memory state
-  - PositionStore with SQLite CRUD
-  - Portfolio summary computation
+- **#12 Fixed Dashboard data race** (`ferrum-dashboard/src/server.rs`)
+  - Changed `Arc<DashboardState>` → `Arc<RwLock<DashboardState>>`
+  - Handlers acquire read lock before accessing state
+  - Added SharedDashboardState type alias
+  - Added concurrent read/write test
 
-- **Phase 5**: Created ferrum-risk (4-layer risk engine)
-  - Pre-tick validation (daily loss, drawdown, cost)
-  - Per-executor validation (count, order size, position limit)
-  - RiskState computation with blocking detection
-  - 8 unit tests covering all validation paths
+### P1 High Priority Fixes
+- **#5 Added API key sanitization** (`ferrum-exchange/src/shared.rs`)
+  - New ExchangeHttpClient with URL sanitization
+  - Replaces sensitive params (apiKey, signature, timestamp) with "***"
+  - Added tests for sanitization
 
-- **Phase 6**: Created ferrum-llm + ferrum-agent + interfaces
-  - OpenAI-compatible LLM client with structured output
-  - OODA loop: observe → orient (LLM) → decide (LLM) → act (deterministic)
-  - Prompt templates for regime detection and signal generation
-  - Agent definition parser (YAML frontmatter + Markdown)
-  - Session management with journal persistence
-  - Learnings store (max 20 cross-session insights)
-  
-- **Phase 7**: Created ferrum-routines + ferrum-api + ferrum-mcp + ferrum-telegram
-  - Technical indicators: SMA, EMA, RSI, MACD, Bollinger Bands, VWAP, ATR
-  - REST API (Axum): health check, agent CRUD
-  - MCP protocol server with 5 tool definitions
-  - Telegram bot with /help, /list, /start, /stop, /status, /portfolio, /positions
+- **#6 Fixed Bybit orderbook** (`ferrum-exchange/src/bybit/rest.rs`)
+  - Corrected field mapping: arr[0] = price, arr[1] = size
+  - Added proper error messages for unimplemented WebSocket streaming
 
-- **Phase 8**: Created ferrum-cli + deployment
-  - CLI: ferrum serve/mcp/run/telegram/list
-  - Dockerfile: multi-stage build → single static binary
-  - docker-compose: Ferrum + Qdrant
-  - Sample agent: grid-market-maker
+- **#9 Created shared exchange HTTP client** (`ferrum-exchange/src/shared.rs`)
+  - ExchangeHttpClient with public_get, signed_get, signed_post, json_post
+  - ExchangeResponseChecker trait for per-exchange error handling
+  - DRY foundation for future adapter refactoring
 
-### Test Results
-- 36 unit tests passing across 6 crates
-- 0 compilation errors
-- Full workspace cargo check clean
+- **#10 Fixed O(n²) backtest** (`ferrum-backtest/src/engine.rs`)
+  - Changed `candles[..=i].to_vec()` → `&candles[..=i]`
+  - compute_indicators receives slice, only to_vec when strategy needs owned
+
+### P2 Medium Priority Fixes
+- **#7 Added Price/Quantity validation** (`ferrum-core/src/types.rs`)
+  - `Price::checked(f64)` and `Quantity::checked(f64)` with NaN/Inf/negative checks
+  - `Price::unchecked(f64)` for hot paths where value is known good
+  - Added `InvalidInput` error variant to FerrumError
+
+- **#15 Fixed subscribe placeholders** (all exchange adapters)
+  - Changed from silently returning empty channels to returning proper errors
+  - Message: "WebSocket streaming not yet implemented. Use get_xxx() for REST snapshots."
+
+- **#16 Fixed Hyperliquid asset index** (`ferrum-exchange/src/hyperliquid/rest.rs`)
+  - Added `resolve_asset_index()` that queries /info meta endpoint
+  - Looks up coin name in universe array to get correct index
+  - Falls back to 0 with warning if not found
+
+### P3 Low Priority Fixes
+- **#13 Fixed OKX signature** (`ferrum-exchange/src/okx/rest.rs`)
+  - GET: requestPath includes query params (endpoint + "?" + params)
+  - POST: requestPath is endpoint only, body passed separately
+  - Consistent with OKX V5 authentication documentation
+
+- **#17 Fixed Sharpe annualization** (`ferrum-backtest/src/metrics.rs`)
+  - Changed from hardcoded sqrt(252) to sqrt(trades_per_year)
+  - trades_per_year = total_trades / duration_years
+  - More accurate for strategies with varying trade frequency
+
+- **#19 Added Send+Sync static assert** (`ferrum-orchestrator/src/coordinator.rs`)
+  - Compile-time verification that Orchestrator is Send + Sync
+
+### Final Stats
+- **88 tests**, all passing
+- **0 compilation errors**
+- **9,682 lines** of Rust code

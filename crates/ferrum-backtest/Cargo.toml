@@ -1,10 +1,14 @@
 [package]
-name = "ferrum-exchange"
+name = "ferrum-backtest"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 ferrum-core = { workspace = true }
+ferrum-exchange = { workspace = true }
+ferrum-executors = { workspace = true }
+ferrum-risk = { workspace = true }
+ferrum-routines = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -13,13 +17,8 @@ async-trait = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 chrono = { workspace = true }
-reqwest = { workspace = true }
-serde_yaml = { workspace = true }
-hmac = { workspace = true }
-sha2 = { workspace = true }
-hex = { workspace = true }
 parking_lot = { workspace = true }
-base64 = "0.22"
+uuid = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros"] }

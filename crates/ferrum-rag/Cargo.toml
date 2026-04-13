@@ -1,5 +1,5 @@
 [package]
-name = "ferrum-exchange"
+name = "ferrum-rag"
 version = "0.1.0"
 edition = "2021"
 
@@ -14,12 +14,8 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 chrono = { workspace = true }
 reqwest = { workspace = true }
-serde_yaml = { workspace = true }
-hmac = { workspace = true }
-sha2 = { workspace = true }
-hex = { workspace = true }
 parking_lot = { workspace = true }
-base64 = "0.22"
+uuid = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros"] }

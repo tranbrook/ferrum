@@ -1,10 +1,14 @@
 [package]
-name = "ferrum-exchange"
+name = "ferrum-dashboard"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 ferrum-core = { workspace = true }
+ferrum-agent = { workspace = true }
+ferrum-exchange = { workspace = true }
+ferrum-positions = { workspace = true }
+ferrum-orchestrator = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -12,14 +16,12 @@ anyhow = { workspace = true }
 async-trait = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
 chrono = { workspace = true }
-reqwest = { workspace = true }
-serde_yaml = { workspace = true }
-hmac = { workspace = true }
-sha2 = { workspace = true }
-hex = { workspace = true }
 parking_lot = { workspace = true }
-base64 = "0.22"
+uuid = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros"] }

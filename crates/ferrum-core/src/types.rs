@@ -14,6 +14,26 @@ impl Price {
     pub fn zero() -> Self { Self(0.0) }
     pub fn is_positive(&self) -> bool { self.0 > 0.0 }
     pub fn inner(&self) -> f64 { self.0 }
+
+    /// Create a new Price, validating it is non-negative.
+    /// Returns Err if the value is NaN, infinite, or negative.
+    pub fn checked(value: f64) -> Result<Self, crate::FerrumError> {
+        if value.is_nan() {
+            return Err(crate::FerrumError::InvalidInput("Price cannot be NaN".into()));
+        }
+        if value.is_infinite() {
+            return Err(crate::FerrumError::InvalidInput("Price cannot be infinite".into()));
+        }
+        if value < 0.0 {
+            return Err(crate::FerrumError::InvalidInput(format!("Price cannot be negative: {}", value)));
+        }
+        Ok(Self(value))
+    }
+
+    /// Create a Price without validation (for internal use where value is known good).
+    /// # Safety
+    /// Caller must ensure value is non-negative and finite.
+    pub fn unchecked(value: f64) -> Self { Self(value) }
 }
 
 impl fmt::Display for Price {
@@ -28,6 +48,26 @@ impl Quantity {
     pub fn zero() -> Self { Self(0.0) }
     pub fn is_positive(&self) -> bool { self.0 > 0.0 }
     pub fn inner(&self) -> f64 { self.0 }
+
+    /// Create a new Quantity, validating it is non-negative.
+    /// Returns Err if the value is NaN, infinite, or negative.
+    pub fn checked(value: f64) -> Result<Self, crate::FerrumError> {
+        if value.is_nan() {
+            return Err(crate::FerrumError::InvalidInput("Quantity cannot be NaN".into()));
+        }
+        if value.is_infinite() {
+            return Err(crate::FerrumError::InvalidInput("Quantity cannot be infinite".into()));
+        }
+        if value < 0.0 {
+            return Err(crate::FerrumError::InvalidInput(format!("Quantity cannot be negative: {}", value)));
+        }
+        Ok(Self(value))
+    }
+
+    /// Create a Quantity without validation.
+    /// # Safety
+    /// Caller must ensure value is non-negative and finite.
+    pub fn unchecked(value: f64) -> Self { Self(value) }
 }
 
 impl fmt::Display for Quantity {

@@ -4,6 +4,9 @@ use ferrum_core::config::ExchangeConfig;
 use ferrum_core::error::{FerrumError, Result};
 use ferrum_core::traits::ExchangeAdapter;
 use crate::binance::BinanceAdapter;
+use crate::bybit::BybitAdapter;
+use crate::okx::OkxAdapter;
+use crate::hyperliquid::HyperliquidAdapter;
 use std::collections::HashMap;
 use std::sync::Arc;
 use parking_lot::RwLock;
@@ -22,6 +25,9 @@ impl ExchangeRegistry {
     pub fn register(&mut self, config: ExchangeConfig) -> Result<()> {
         let adapter: Box<dyn ExchangeAdapter> = match config.name.as_str() {
             "binance" => Box::new(BinanceAdapter::new(config.clone())),
+            "bybit" => Box::new(BybitAdapter::new(config.clone())),
+            "okx" => Box::new(OkxAdapter::new(config.clone())),
+            "hyperliquid" => Box::new(HyperliquidAdapter::new(config.clone())),
             other => return Err(FerrumError::ExchangeError(format!("Unknown exchange: {}", other))),
         };
         self.adapters.insert(config.name.clone(), Arc::new(RwLock::new(adapter)));

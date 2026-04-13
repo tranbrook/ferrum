@@ -1,74 +1,62 @@
-# Ferrum - Rust Trading Agent Harness
+# Ferrum - AI-Powered Crypto Trading Bot
 
 ## Overview
-Ferrum (Latin: Iron) is an open-source Rust trading agent harness inspired by Hummingbot Condor. It enables users to build, configure, and run autonomous LLM-powered trading agents that observe crypto markets, reason about strategy using LLMs, and execute trades deterministically across multiple exchanges.
+Ferrum is a comprehensive, modular crypto trading bot written in Rust. It features a multi-agent architecture with LLM-powered intelligence, supporting multiple exchanges with a unified adapter pattern.
 
 ## Architecture
-- **12-crate Cargo workspace** with trait-based abstractions
-- **OODA Loop**: Observe → Orient (LLM) → Decide (LLM) → Act (deterministic)
-- **Deterministic Risk Engine**: 4-layer validation between LLM and exchange
-- **Event-driven**: tokio broadcast channels for real-time event routing
+```
+ferrum/
+├── crates/
+│   ├── ferrum-core/         # Core types, traits, config, events
+│   ├── ferrum-config/       # YAML config loading
+│   ├── ferrum-exchange/     # Exchange adapters (Binance, Bybit, OKX, Hyperliquid)
+│   ├── ferrum-llm/          # LLM client (OpenAI, Groq, Anthropic)
+│   ├── ferrum-local-llm/    # Local LLM inference
+│   ├── ferrum-rag/          # RAG pipeline (Qdrant + embeddings)
+│   ├── ferrum-agent/        # OODA loop trading agent
+│   ├── ferrum-orchestrator/ # Multi-agent coordination
+│   ├── ferrum-executors/    # Trade execution layer
+│   ├── ferrum-risk/         # Risk management engine
+│   ├── ferrum-positions/    # Position tracking (SQLite)
+│   ├── ferrum-backtest/     # Backtesting engine + strategies
+│   ├── ferrum-paper/        # Paper trading simulation
+│   ├── ferrum-routines/     # Indicators and strategy routines
+│   ├── ferrum-streaming/    # WebSocket streaming
+│   ├── ferrum-dashboard/    # Web dashboard (Axum)
+│   ├── ferrum-api/          # REST API
+│   ├── ferrum-mcp/          # MCP integration
+│   ├── ferrum-telegram/     # Telegram bot
+│   ├── ferrum-cli/          # CLI interface
+│   └── ferrum-server/       # Main binary
+```
 
-## Crates
-| Crate | Purpose |
-|-------|---------|
-| ferrum-core | Domain types, traits, events, config |
-| ferrum-exchange | Exchange adapters (Binance first) |
-| ferrum-executors | Trading operations (Position, Order, Grid) |
-| ferrum-positions | Position tracking + SQLite persistence |
-| ferrum-risk | 4-layer risk engine |
-| ferrum-llm | LLM integration (OpenAI, Anthropic, Groq) |
-| ferrum-agent | OODA loop + session management |
-| ferrum-routines | Technical indicators + alerts |
-| ferrum-api | REST API (Axum) |
-| ferrum-mcp | MCP protocol server |
-| ferrum-telegram | Telegram bot |
-| ferrum-cli | CLI binary |
+## Key Features
+- **Multi-Exchange**: Binance, Bybit, OKX, Hyperliquid via unified trait
+- **AI Intelligence**: RAG pipeline with vector search, local LLM inference
+- **Multi-Agent**: Orchestrated team of specialized agents (Analyst, Risk, Executor, Portfolio, Research)
+- **Backtesting**: Historical replay with SMA Crossover and RSI strategies
+- **Paper Trading**: Simulated execution with slippage and fee modeling
+- **Risk Management**: Configurable limits, validation engine
+- **Web Dashboard**: Real-time monitoring via Axum REST API
 
-## Quick Start
+## Build & Test
 ```bash
-# Build
-cargo build --release
-
-# Run API server
-ferrum serve --port 8080
-
-# Run MCP server
-ferrum mcp --port 8081
-
-# Run a trading agent
-ferrum run --agent agents/grid-market-maker/agent.md
-
-# Start Telegram bot
-ferrum telegram --token YOUR_BOT_TOKEN
-
-# List available agents
-ferrum list --dir agents/
+cargo build
+cargo test        # 77 tests, all passing
+cargo check       # 0 errors
 ```
 
-## Agent Definition (agent.md)
-```yaml
----
-name: grid-market-maker
-tick_interval_secs: 30
-connectors:
-  - binance
-trading_pair: BTC-USDT
-limits:
-  max_position_size_quote: 1000
-  max_daily_loss_quote: 50
-  max_drawdown_pct: 10
+## Stats
+- **19 crates** in workspace
+- **9,111 lines** of Rust code
+- **77 unit tests** passing
+- **4 exchange adapters**
+
+
 ---
 
-## Goal
-Maintain a grid market making strategy on BTC-USDT
+## Session Update - 2026-04-13 11:25
+- **Session Started**: 2026-04-13 11:25
+- **Context Status**: Verified and up-to-date
 
-## Rules
-- Place buy orders below mid price
-- Place sell orders above mid price
-- Never exceed 50 USDT daily loss limit
-```
-
-## Test Status
-- 36 unit tests passing
-- 0 compilation errors
+*Context automatically updated for new development session*

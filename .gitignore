@@ -30,3 +30,6 @@ sessions/
 
 # Docker
 .docker/
+
+# Cache
+.fastembed_cache/

@@ -1,40 +1,28 @@
-# Ferrum - Rust Trading Agent Harness
+# Ferrum Bugfix Sprint - TODO
 
-## Phase 1: Foundation ✅
-- [x] ferrum-core: types, traits, events, config, error types
-- [x] ferrum-exchange: Binance REST adapter, exchange registry
-- [x] ferrum-executors: PositionExecutor (Triple Barrier), OrderExecutor, GridExecutor, ExecutorFactory
-- [x] ferrum-positions: PositionTracker, PositionStore (SQLite)
-- [x] ferrum-risk: 4-layer RiskEngine with deterministic validation
+## P0 - Critical (Sai số tiền, Crash)
+- [x] #2 Fix double fee deduction in paper trading engine
+- [x] #3 Fix short selling logic in backtest engine
+- [x] #4 Fix PnL accumulation error in position tracker
+- [x] #12 Fix Dashboard data race (add RwLock)
 
-## Phase 2: LLM + Agent ✅
-- [x] ferrum-llm: OpenAI/Anthropic/Groq client, PromptBuilder (OODA templates)
-- [x] ferrum-agent: OODA loop, agent.md parser, session management, learnings store
-- [x] Agent definition parser (YAML frontmatter + Markdown)
+## P1 - High (Bảo mật, Dữ liệu)
+- [x] #5 Sanitize API keys from logs (ExchangeHttpClient)
+- [x] #6 Fix Bybit orderbook field mapping (index 0=price, 1=size)
+- [x] #9 Extract shared exchange HTTP client (DRY - shared.rs)
+- [x] #10 Fix O(n²) backtest performance (use slice reference)
 
-## Phase 3: Routines + Interfaces ✅
-- [x] ferrum-routines: Technical indicators (SMA, EMA, RSI, MACD, Bollinger, VWAP, ATR), webhooks, alerts
-- [x] ferrum-api: REST API server (Axum), JWT auth, health check, agent CRUD
-- [x] ferrum-mcp: MCP protocol server with tool definitions
-- [x] ferrum-telegram: Telegram bot interface (teloxide)
+## P2 - Medium (Validation, Precision)
+- [x] #7 Add Price/Quantity validation constructors (checked/unchecked)
+- [x] #15 Mark unimplemented subscribe methods with proper errors
+- [x] #16 Fix Hyperliquid hardcoded asset index (resolve_asset_index)
 
-## Phase 4: CLI + Deployment ✅
-- [x] ferrum-cli: CLI binary (clap) with serve, mcp, run, telegram, list commands
-- [x] Dockerfile: Multi-stage build for single static binary
-- [x] docker-compose: Ferrum + Qdrant stack
-- [x] Sample agent definition: grid-market-maker
+## P3 - Low (Architecture, Metrics)
+- [x] #13 Fix OKX signature endpoint handling (requestPath includes query for GET)
+- [x] #17 Fix Sharpe annualization (use trades-per-year factor)
+- [x] #19 Add Send+Sync bounds to orchestrator (static assert)
 
-## Testing ✅
-- [x] All 36 unit tests passing
-- [x] cargo check: 0 errors
-- [x] Full workspace compilation verified
-
-## Future Enhancements
-- [ ] WebSocket streaming for real-time orderbook
-- [ ] Bybit, OKX, Hyperliquid adapters
-- [ ] RAG pipeline with Qdrant + FinBERT embeddings
-- [ ] Backtesting engine
-- [ ] Local LLM inference (candle-transformers)
-- [ ] Web dashboard (React + WASM)
-- [ ] Multi-agent orchestration
-- [ ] Paper trading mode
+## Final Verification
+- [x] cargo check - 0 errors, 51 warnings
+- [x] cargo test - 88 tests, ALL PASSING
+- [x] 9,682 lines of Rust code

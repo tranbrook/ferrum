@@ -47,6 +47,9 @@ pub enum FerrumError {
     #[error("Not found: {0}")]
     NotFound(String),
 
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+
     #[error("{0}")]
     Internal(String),
 }

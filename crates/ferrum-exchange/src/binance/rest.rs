@@ -125,12 +125,15 @@ impl ExchangeAdapter for BinanceAdapter {
     }
 
     async fn subscribe_orderbook(&self, _pair: TradingPair) -> Result<broadcast::Receiver<FerrumEvent>> {
-        // WebSocket subscription would be implemented here
-        Ok(self.event_tx.subscribe())
+        Err(FerrumError::ExchangeError(
+            "Binance WebSocket streaming not yet implemented. Use get_orderbook() for REST snapshots.".into()
+        ))
     }
 
     async fn subscribe_candles(&self, _pair: TradingPair, _interval: Interval) -> Result<broadcast::Receiver<FerrumEvent>> {
-        Ok(self.event_tx.subscribe())
+        Err(FerrumError::ExchangeError(
+            "Binance WebSocket streaming not yet implemented. Use get_candles() for REST snapshots.".into()
+        ))
     }
 
     async fn get_orderbook(&self, pair: &TradingPair) -> Result<OrderBook> {
