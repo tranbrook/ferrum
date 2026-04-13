@@ -1,151 +1,166 @@
-# Ferrum 🦀
+# 🔥 Ferrum — AI-Powered Crypto Trading Bot
 
-> **Rust Trading Agent Harness** — Kiến trúc LLM-First lấy cảm hứng từ [Hummingbot Condor](https://hummingbot.org/condor/)
+**Rust** workspace với kiến trúc multi-agent, RAG pipeline, backtesting engine, và hỗ trợ đa sàn giao dịch.
 
-Ferrum (tiếng Latin: Sắt) là một open-source trading agent harness viết bằng Rust, cho phép xây dựng, cấu hình và chạy các autonomous LLM-powered trading agents quan sát thị trường crypto, phân tích chiến lược bằng LLM, và thực thi giao dịch một cách deterministic.
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-88%20passing-brightgreen)]()
+[![License](https://img.shields.io/badge/license-MIT-blue)]()
+
+---
 
 ## ✨ Tính năng chính
 
-- 🧠 **LLM-First** — Sử dụng LLM (OpenAI, Anthropic, Groq) làm decision engine thay vì ML truyền thống
-- 🔄 **OODA Loop** — Observe → Orient → Decide → Act, kết hợp AI reasoning với deterministic execution
-- 🛡️ **4-Layer Risk Engine** — Validation layer bắt buộc giữa LLM và Exchange API
-- 📦 **6 Executor Types** — Position (Triple Barrier), Order, Grid, Swap, LP, DCA
-- 📝 **Agent Definition** — Định nghĩa agent bằng file `agent.md` (YAML + Markdown)
-- 💾 **Session Persistence** — Journal, learnings (max 20 insights), session continuity
-- 🔌 **12 Crate Workspace** — Modular, trait-based architecture
-- 🐳 **Single Binary** — Build ra 1 static binary ~11MB
+- 🔄 **Đa sàn giao dịch**: Binance, Bybit, OKX, Hyperliquid — cùng một API
+- 🤖 **Multi-Agent**: 5 vai trò chuyên biệt phối hợp (Analyst, Risk, Executor, Portfolio, Research)
+- 🧠 **AI Intelligence**: RAG pipeline + LLM (OpenAI/Groq/Local)
+- 📊 **Backtesting**: SMA Crossover, RSI + metrics (Sharpe, Sortino, Max Drawdown)
+- 📝 **Paper Trading**: Mô phỏng真实 với slippage + fees
+- 🛡️ **Risk Management**: 4-layer validation (daily loss, drawdown, cost, manual block)
+- 📈 **Web Dashboard**: REST API real-time monitoring
+- 📱 **Telegram Bot**: Điều khiển qua chat
+- 🔌 **MCP Server**: Tích hợp với ChatGPT/Claude
 
-## 🏗️ Kiến trúc
-
-```
-ferrum/
-├── crates/
-│   ├── ferrum-core/       # Types, traits, events, config, errors
-│   ├── ferrum-exchange/   # Exchange adapters (Binance, ...)
-│   ├── ferrum-executors/  # Position, Order, Grid executors
-│   ├── ferrum-positions/  # Position tracking + SQLite persistence
-│   ├── ferrum-risk/       # 4-layer risk engine
-│   ├── ferrum-llm/        # LLM integration (OpenAI, Anthropic, Groq)
-│   ├── ferrum-agent/      # OODA loop + session management
-│   ├── ferrum-routines/   # Technical indicators + alerts
-│   ├── ferrum-api/        # REST API (Axum) + JWT auth
-│   ├── ferrum-mcp/        # MCP protocol server
-│   ├── ferrum-telegram/   # Telegram bot interface
-│   └── ferrum-cli/        # CLI binary
-├── agents/                 # Agent definitions
-│   └── grid-market-maker/  # Sample agent
-├── config/                 # Configuration files
-├── Dockerfile              # Multi-stage build
-└── docker-compose.yml      # Ferrum + Qdrant
-```
+---
 
 ## 🚀 Quick Start
 
 ```bash
+# Clone
+git clone https://github.com/tranbrook/ferrum.git
+cd ferrum
+
 # Build
 cargo build --release
 
-# Run API server
-./target/release/ferrum serve --port 8080
+# Chạy tests (88 tests)
+cargo test
 
-# Run MCP server
-./target/release/ferrum mcp --port 8081
-
-# Run trading agent
-./target/release/ferrum run --agent agents/grid-market-maker/agent.md
-
-# Start Telegram bot
-./target/release/ferrum telegram --token YOUR_BOT_TOKEN
-
-# List agents
-./target/release/ferrum list --dir agents/
-
-# Docker
-docker-compose up -d
+# Xem help
+./target/release/ferrum --help
 ```
 
-## 📝 Định nghĩa Agent (agent.md)
+## 📖 Hướng dẫn sử dụng
 
-```yaml
----
-name: grid-market-maker
-tick_interval_secs: 30
-connectors:
-  - binance
-trading_pair: BTC-USDT
-spread_percentage: 0.5
-limits:
-  max_position_size_quote: 1000
-  max_daily_loss_quote: 50
-  max_drawdown_pct: 10
-  max_open_executors: 10
+Xem hướng dẫn đầy đủ tại: **[docs/USAGE_GUIDE.md](docs/USAGE_GUIDE.md)**
+
 ---
 
-## Goal
-Maintain a grid market making strategy on BTC-USDT
+## 🏗️ Architecture
 
-## Rules
-- Place buy orders below mid price
-- Place sell orders above mid price
-- Never exceed 50 USDT daily loss limit
-- Close all positions if drawdown exceeds 10%
+```
+ferrum/  (19 crates, 9,682 LOC)
+├── ferrum-core          # Types, traits, config, events, errors
+├── ferrum-exchange      # Binance | Bybit | OKX | Hyperliquid adapters
+├── ferrum-llm           # OpenAI / Groq / Anthropic client
+├── ferrum-local-llm     # On-device LLM inference
+├── ferrum-rag           # RAG pipeline (Qdrant + embeddings)
+├── ferrum-agent         # OODA loop trading agent
+├── ferrum-orchestrator  # Multi-agent message routing
+├── ferrum-executors     # Trade execution layer
+├── ferrum-risk          # Risk management engine
+├── ferrum-positions     # Position tracking (SQLite)
+├── ferrum-backtest      # Strategy backtesting + metrics
+├── ferrum-paper         # Paper trading simulation
+├── ferrum-routines      # Indicators + strategy routines
+├── ferrum-streaming     # WebSocket streaming
+├── ferrum-dashboard     # Web dashboard (Axum)
+├── ferrum-api           # REST API server
+├── ferrum-mcp           # MCP integration
+├── ferrum-telegram      # Telegram bot
+└── ferrum-cli           # Command-line interface
 ```
 
-## 🛡️ Risk Engine
+---
 
-**Nguyên tắc vàng: LLM proposes, deterministic code DISPOSES**
+## 📖 Usage
 
-| Layer | Kiểm tra |
-|-------|----------|
-| Pre-tick | Daily loss, max drawdown, daily cost |
-| Per-executor | Executor count, order size, position limit |
-| Position | Leverage, exposure |
-| Kill switch | Emergency stop |
-
-`RiskLimits` (user-only) vs `AgentConfig` (agent có thể suggest, user approve)
-
-## 🧪 Tests
+### CLI Commands
 
 ```bash
-cargo test        # 36 unit tests, all passing
-cargo check       # 0 errors
-cargo clippy      # Lint check
+# Xem help
+ferrum --help
+
+# Chạy API server + Dashboard
+ferrum serve --port 8080
+
+# Chạy trading agent (paper mode)
+ferrum run --agent agents/my-strategy/agent.md --paper
+
+# Chạy Telegram bot
+ferrum telegram --token "YOUR_TOKEN"
+
+# Chạy MCP server
+ferrum mcp --port 8081
+
+# Liệt kê agents
+ferrum list
 ```
 
-## 🔧 Crate Ecosystem
+### Định nghĩa Agent
 
-| Crate | Dependencies | Lines |
-|-------|-------------|-------|
-| ferrum-core | serde, thiserror, async-trait, tokio | ~500 |
-| ferrum-exchange | reqwest, hmac, sha2 | ~350 |
-| ferrum-executors | ferrum-core, ferrum-risk | ~450 |
-| ferrum-positions | rusqlite, parking_lot | ~200 |
-| ferrum-risk | parking_lot | ~250 |
-| ferrum-llm | reqwest | ~250 |
-| ferrum-agent | all above | ~350 |
-| ferrum-routines | ferrum-core | ~250 |
-| ferrum-api | axum, tower, jsonwebtoken | ~150 |
-| ferrum-mcp | axum | ~150 |
-| ferrum-telegram | teloxide | ~80 |
-| ferrum-cli | clap, all crates | ~120 |
+Tạo file `agents/my-strategy/agent.md`:
 
-## 📋 Roadmap
+```markdown
+---
+name: "BTC Grid Trader"
+pair: "BTC-USDT"
+tick_interval: 60
+connectors: ["binance"]
+---
 
-- [x] Phase 1: Core types, traits, events
-- [x] Phase 2: Exchange adapter (Binance)
-- [x] Phase 3: Executor framework (Position, Order, Grid)
-- [x] Phase 4: Risk engine (4-layer)
-- [x] Phase 5: LLM integration + OODA agent
-- [x] Phase 6: REST API + MCP + Telegram
-- [x] Phase 7: CLI + Docker deployment
-- [ ] WebSocket streaming for real-time orderbook
-- [ ] Bybit, OKX, Hyperliquid adapters
-- [ ] RAG pipeline (Qdrant + FinBERT)
-- [ ] Backtesting engine
-- [ ] Local LLM inference (candle-transformers)
-- [ ] Web dashboard
-- [ ] Multi-agent orchestration
+# Goal
+Generate profit with grid orders on BTC/USDT.
+
+# Rules
+- Close all if daily loss > $50
+- Max $500 total exposure
+- Use 1% portfolio per order
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/status` | System status |
+| GET | `/api/positions` | Open positions |
+| GET | `/api/agents` | Agent status |
+| GET | `/api/balances` | Account balances |
+| GET | `/api/trades` | Trade history |
+| POST | `/api/start` | Start trading |
+| POST | `/api/stop` | Stop trading |
+
+📖 **Full guide**: [docs/USAGE_GUIDE.md](docs/USAGE_GUIDE.md)
+
+---
+
+## 🧪 Testing
+
+```bash
+# 88 tests, all passing
+cargo test
+
+# Individual crates
+cargo test -p ferrum-backtest
+cargo test -p ferrum-paper
+cargo test -p ferrum-exchange
+
+# With logs
+RUST_LOG=debug cargo test -p ferrum-agent
+```
+
+---
+
+## ⚠️ Disclaimer
+
+**Ferrum là phần mềm giáo dục và nghiên cứu.** Trading cryptocurrency có rủi ro cao. LUÔN:
+
+1. ✅ Test trên **testnet** trước
+2. ✅ Chạy **paper trading** ít nhất 2 tuần
+3. ✅ Bắt đầu với số tiền **rất nhỏ**
+4. ❌ Không bao giờ invest hơn số bạn có thể mất
+
+---
 
 ## 📄 License
 
-Apache License 2.0
+MIT License — xem [LICENSE](LICENSE)
